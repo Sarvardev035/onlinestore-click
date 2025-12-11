@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mini Marketplace</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/normalize/8.0.1/normalize.min.css">
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <header class="header">
+        <h1>Mini Marketplace</h1>
+    </header>
+
+    <main class="container">
+        <!-- Products Section -->
+        <section class="section products-section">
+            <h2>Products</h2>
+            <div id="products-container" class="products-grid">
+                <div class="loading">Loading products...</div>
+            </div>
+        </section>
+
+        <!-- Cart Section -->
+        <section class="section cart-section">
+            <h2>Shopping Cart</h2>
+            <div id="react-cart-root"></div>
+        </section>
+    </main>
+
+    <footer class="footer">
+        <p>&copy; 2025 Mini Marketplace. All rights reserved.</p>
+    </footer>
+
+    <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+    <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+    <script src="products.js"></script>
+    <script src="react-cart-app.js"></script>
+</body>
+</html>
