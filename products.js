@@ -87,13 +87,17 @@ function addToCart(product) {
     if (existingItem) {
         existingItem.quantity += 1;
     } else {
+        // assign a random discount between 2% and 10% when first added
+        const discountPercent = Math.floor(Math.random() * 9) + 2; // 2..10
+
         cart.push({
             id: product.id,
             title: product.title,
             price: product.price,
             image: product.image,
             quantity: 1,
-            addedAt: new Date().toISOString() // Add timestamp for discount timer
+            addedAt: new Date().toISOString(), // Add timestamp for discount timer
+            discountPercent: discountPercent
         });
     }
     

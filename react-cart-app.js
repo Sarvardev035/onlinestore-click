@@ -4,40 +4,55 @@
 
 const { useState, useEffect } = React;
 
-function DiscountTimer({ addedTime }) {
-  const [timeLeft, setTimeLeft] = useState(1200); // 20 minutes in seconds
+function DiscountTimer({ addedTime, itemId, onExpire }) {
+  const DURATION = 20 * 60; // 20 minutes in seconds
+  const [timeLeft, setTimeLeft] = useState(() => {
+    if (!addedTime) return 0;
+    const elapsed = Math.floor((Date.now() - Date.parse(addedTime)) / 1000);
+    return Math.max(0, DURATION - elapsed);
+  });
+  const expiredCalledRef = React.useRef(false);
 
   useEffect(() => {
-    const timer = setInterval(() => {
+    const tick = () => {
       setTimeLeft(prev => {
-        if (prev <= 1) {
-          clearInterval(timer);
-          return 0;
-        }
+        if (prev <= 1) return 0;
         return prev - 1;
       });
-    }, 1000);
+    };
 
-    return () => clearInterval(timer);
+    const interval = setInterval(tick, 1000);
+    return () => clearInterval(interval);
   }, [addedTime]);
 
   const minutes = Math.floor(timeLeft / 60);
   const seconds = timeLeft % 60;
-  const isExpiring = timeLeft < 300; // Less than 5 minutes
+  const isExpiring = timeLeft < 300 && timeLeft > 0; // Less than 5 minutes
+
+  // Call onExpire once when timeLeft reaches zero
+  useEffect(() => {
+    if (timeLeft === 0 && onExpire && !expiredCalledRef.current) {
+      expiredCalledRef.current = true;
+      try {
+        onExpire(itemId);
+      } catch (e) {
+        console.error('onExpire callback error', e);
+      }
+    }
+  }, [timeLeft, onExpire, itemId]);
 
   return React.createElement('div', { 
     className: `discount-timer ${isExpiring ? 'expiring' : ''}` 
   },
-    React.createElement('span', { className: 'discount-badge' }, '⚡ 20% OFF'),
     React.createElement('span', { className: 'timer-text' }, 
-      `${minutes}:${seconds < 10 ? '0' : ''}${seconds}`
+      timeLeft > 0 ? `${minutes}:${seconds < 10 ? '0' : ''}${seconds}` : 'Expired'
     )
   );
 }
 
-function CartItem({ item, onRemove, onUpdateQuantity }) {
-  const discountRate = 0.20; // 20% discount
-  const discountedPrice = item.price * (1 - discountRate);
+function CartItem({ item, onRemove, onUpdateQuantity, onExpire }) {
+  const discountRate = item.discountPercent ? (item.discountPercent / 100) : 0;
+  const discountedPrice = +(item.price * (1 - discountRate));
   const savings = (item.price - discountedPrice).toFixed(2);
   const itemTotal = (discountedPrice * item.quantity).toFixed(2);
   const originalTotal = (item.price * item.quantity).toFixed(2);
@@ -61,16 +76,16 @@ function CartItem({ item, onRemove, onUpdateQuantity }) {
           React.createElement('span', { className: 'price-label' }, 'Original:'),
           React.createElement('span', { className: 'original-price' }, `$${item.price.toFixed(2)}`)
         ),
-        React.createElement('div', { className: 'price-section discount-section' },
+        discountRate > 0 && React.createElement('div', { className: 'price-section discount-section' },
           React.createElement('span', { className: 'price-label discount-label' }, 'Sale:'),
           React.createElement('span', { className: 'discounted-price' }, `$${discountedPrice.toFixed(2)}`)
         )
       ),
-      React.createElement('div', { className: 'savings-info' },
-        React.createElement('span', { className: 'discount-percent' }, '20% OFF'),
+      discountRate > 0 && React.createElement('div', { className: 'savings-info' },
+        React.createElement('span', { className: 'discount-percent' }, `${item.discountPercent}% OFF`),
         React.createElement('span', { className: 'savings-amount' }, `Save $${savings}`)
       ),
-      React.createElement(DiscountTimer, { addedTime: item.addedAt })
+      React.createElement(DiscountTimer, { addedTime: item.addedAt, itemId: item.id, onExpire: onExpire })
     ),
     React.createElement('div', { className: 'cart-item-controls' },
       React.createElement('button', { 
@@ -101,7 +116,7 @@ function CartItem({ item, onRemove, onUpdateQuantity }) {
         React.createElement('span', { className: 'total-label' }, 'Total:'),
         React.createElement('span', { className: 'discounted-total' }, `$${itemTotal}`)
       ),
-      React.createElement('span', { className: 'original-total' }, `Was $${originalTotal}`)
+      discountRate > 0 ? React.createElement('span', { className: 'original-total' }, `Was $${originalTotal}`) : null
     ),
     React.createElement('button', { 
       className: 'btn-remove', 
@@ -111,14 +126,15 @@ function CartItem({ item, onRemove, onUpdateQuantity }) {
   );
 }
 
-function CartList({ items, onRemove, onUpdateQuantity }) {
+function CartList({ items, onRemove, onUpdateQuantity, onExpire }) {
   return React.createElement('div', { className: 'cart-list' },
     items.map(item => 
       React.createElement(CartItem, {
         key: item.id,
         item: item,
         onRemove: onRemove,
-        onUpdateQuantity: onUpdateQuantity
+        onUpdateQuantity: onUpdateQuantity,
+        onExpire: onExpire
       })
     )
   );
@@ -180,6 +196,20 @@ function App() {
     }
   };
 
+  // When a discount expires for an item, remove its discountPercent
+  const expireDiscount = (productId) => {
+    const updatedCart = cart.map(item => {
+      if (item.id === productId) {
+        const copy = { ...item };
+        delete copy.discountPercent;
+        return copy;
+      }
+      return item;
+    });
+    setCart(updatedCart);
+    saveCartToStorage(updatedCart);
+  };
+
   const clearCart = () => {
     setCart([]);
     saveCartToStorage([]);
@@ -189,15 +219,16 @@ function App() {
     return cart.reduce((total, item) => total + item.quantity, 0);
   };
 
-  // Calculate discounted total price (20% off)
+  // Calculate totals using per-item discountPercent when present
   const getTotalPrice = () => {
     return cart.reduce((total, item) => {
-      const discountedPrice = item.price * 0.8; // 20% discount
+      const rate = item.discountPercent ? (1 - item.discountPercent / 100) : 1;
+      const discountedPrice = item.price * rate;
       return total + (discountedPrice * item.quantity);
     }, 0);
   };
 
-  // Calculate original total before discount
+  // Calculate original total before discounts
   const getOriginalTotal = () => {
     return cart.reduce((total, item) => total + (item.price * item.quantity), 0);
   };
@@ -216,12 +247,13 @@ function App() {
     
     cart.length === 0 ? React.createElement('div', { className: 'empty-cart' },
       React.createElement('p', null, '🛒 Your cart is empty'),
-      React.createElement('p', { className: 'empty-cart-hint' }, 'Add items from the Products section to see amazing 20% limited-time discounts!')
+      React.createElement('p', { className: 'empty-cart-hint' }, 'Add items from the Products section to get limited-time discounts (2–10%)!')
     ) : React.createElement(React.Fragment, null,
       React.createElement(CartList, {
         items: cart,
         onRemove: removeFromCart,
-        onUpdateQuantity: updateQuantity
+        onUpdateQuantity: updateQuantity,
+        onExpire: expireDiscount
       }),
 
       React.createElement('div', { className: 'cart-summary' },
@@ -229,15 +261,15 @@ function App() {
           React.createElement('span', null, 'Original Total:'),
           React.createElement('span', { className: 'original-amount' }, `$${getOriginalTotal().toFixed(2)}`)
         ),
-        React.createElement('div', { className: 'summary-row discount-row' },
-          React.createElement('span', null, '⚡ Discount (20%):'),
-          React.createElement('span', { className: 'discount-amount' }, `-$${getTotalSavings().toFixed(2)}`)
-        ),
+          React.createElement('div', { className: 'summary-row discount-row' },
+            React.createElement('span', null, '⚡ Discounts:'),
+            React.createElement('span', { className: 'discount-amount' }, `-$${getTotalSavings().toFixed(2)}`)
+          ),
         React.createElement('div', { className: 'summary-row total' },
           React.createElement('span', null, 'Final Total:'),
           React.createElement('span', null, `$${getTotalPrice().toFixed(2)}`)
         ),
-        React.createElement('p', { className: 'discount-message' }, '✨ Limited Time: 20% Off All Items for 20 Minutes!')
+          React.createElement('p', { className: 'discount-message' }, '✨ Limited-time discounts (2–10%) per item for 20 minutes')
       ),
 
       React.createElement('div', { className: 'cart-actions' },
