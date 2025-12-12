@@ -2,6 +2,15 @@
 
 A full-stack e-commerce demo application combining **Vanilla JavaScript** for product management with **React** for cart functionality.
 
+
+
+
+# creator Sarvarbek Sharipboyev 
+
+# it took me to make this website about 5 hours it was amzing experience for me i ve learned some techniques also and thanks for giving me this opportunity for Click company 
+
+#https://sarvardev035.github.io/onlinestore-click-intern/     here is the github pages link to see this  website 
+### everything is full of fun no problem at all task was understandabla and some intelligence is enought 
 ## Overview
 
 Mini Marketplace showcases a modern web architecture where:
