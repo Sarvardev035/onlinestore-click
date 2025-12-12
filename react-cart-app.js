@@ -56,10 +56,19 @@ function CartItem({ item, onRemove, onUpdateQuantity }) {
     React.createElement('img', { src: item.image, alt: item.title, className: 'cart-item-image' }),
     React.createElement('div', { className: 'cart-item-details' },
       React.createElement('h4', { className: 'cart-item-title' }, item.title),
-      React.createElement('div', { className: 'cart-item-pricing' },
-        React.createElement('span', { className: 'original-price' }, `$${item.price.toFixed(2)}`),
-        React.createElement('span', { className: 'discounted-price' }, `$${discountedPrice.toFixed(2)}`),
-        React.createElement('span', { className: 'savings' }, `Save $${savings}`)
+      React.createElement('div', { className: 'price-row' },
+        React.createElement('div', { className: 'price-section original-section' },
+          React.createElement('span', { className: 'price-label' }, 'Original:'),
+          React.createElement('span', { className: 'original-price' }, `$${item.price.toFixed(2)}`)
+        ),
+        React.createElement('div', { className: 'price-section discount-section' },
+          React.createElement('span', { className: 'price-label discount-label' }, 'Sale:'),
+          React.createElement('span', { className: 'discounted-price' }, `$${discountedPrice.toFixed(2)}`)
+        )
+      ),
+      React.createElement('div', { className: 'savings-info' },
+        React.createElement('span', { className: 'discount-percent' }, '20% OFF'),
+        React.createElement('span', { className: 'savings-amount' }, `Save $${savings}`)
       ),
       React.createElement(DiscountTimer, { addedTime: item.addedAt })
     ),
@@ -88,8 +97,11 @@ function CartItem({ item, onRemove, onUpdateQuantity }) {
       }, '+')
     ),
     React.createElement('div', { className: 'cart-item-total' },
-      React.createElement('p', { className: 'discounted-total' }, `$${itemTotal}`),
-      React.createElement('p', { className: 'original-total' }, `Was $${originalTotal}`)
+      React.createElement('div', { className: 'total-section' },
+        React.createElement('span', { className: 'total-label' }, 'Total:'),
+        React.createElement('span', { className: 'discounted-total' }, `$${itemTotal}`)
+      ),
+      React.createElement('span', { className: 'original-total' }, `Was $${originalTotal}`)
     ),
     React.createElement('button', { 
       className: 'btn-remove', 
