@@ -29,6 +29,109 @@
         </section>
     </main>
 
+    <!-- Checkout Modal -->
+    <div id="checkout-modal" class="checkout-modal hidden">
+        <div class="checkout-container">
+            <div class="checkout-header">
+                <h2>Delivery & Payment</h2>
+                <button id="close-checkout" class="close-btn">&times;</button>
+            </div>
+
+            <form id="checkout-form" class="checkout-form">
+                <!-- Contact Details -->
+                <fieldset class="form-group">
+                    <legend>Contact Details</legend>
+                    <div class="form-row">
+                        <div class="form-col">
+                            <label for="full-name">Full Name *</label>
+                            <input type="text" id="full-name" name="fullName" required placeholder="John Doe">
+                        </div>
+                        <div class="form-col">
+                            <label for="phone">Phone Number *</label>
+                            <input type="tel" id="phone" name="phone" required placeholder="+1 (555) 123-4567">
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-col">
+                            <label for="email">Email (Gmail) *</label>
+                            <input type="email" id="email" name="email" required placeholder="your.email@gmail.com">
+                        </div>
+                    </div>
+                </fieldset>
+
+                <!-- Address Details -->
+                <fieldset class="form-group">
+                    <legend>Delivery Address</legend>
+                    <div class="form-row">
+                        <div class="form-col full-width">
+                            <label for="street">Street Address *</label>
+                            <input type="text" id="street" name="street" required placeholder="123 Main Street">
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-col">
+                            <label for="city">City *</label>
+                            <input type="text" id="city" name="city" required placeholder="New York">
+                        </div>
+                        <div class="form-col">
+                            <label for="state">State/Province *</label>
+                            <input type="text" id="state" name="state" required placeholder="NY">
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-col">
+                            <label for="zip">ZIP/Postal Code *</label>
+                            <input type="text" id="zip" name="zip" required placeholder="10001">
+                        </div>
+                        <div class="form-col">
+                            <label for="country">Country *</label>
+                            <input type="text" id="country" name="country" required placeholder="United States">
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-col full-width">
+                            <label for="notes">Delivery Notes (Optional)</label>
+                            <textarea id="notes" name="notes" rows="3" placeholder="E.g., Leave at door, ring bell loudly"></textarea>
+                        </div>
+                    </div>
+                </fieldset>
+
+                <!-- Payment Type -->
+                <fieldset class="form-group">
+                    <legend>Payment Method</legend>
+                    <div class="radio-group">
+                        <label class="radio-label">
+                            <input type="radio" name="paymentType" value="credit-card" required>
+                            <span>Credit Card (Visa/Mastercard)</span>
+                        </label>
+                        <label class="radio-label">
+                            <input type="radio" name="paymentType" value="debit-card" required>
+                            <span>Debit Card</span>
+                        </label>
+                        <label class="radio-label">
+                            <input type="radio" name="paymentType" value="paypal" required>
+                            <span>PayPal</span>
+                        </label>
+                        <label class="radio-label">
+                            <input type="radio" name="paymentType" value="bank-transfer" required>
+                            <span>Bank Transfer</span>
+                        </label>
+                        <label class="radio-label">
+                            <input type="radio" name="paymentType" value="cash-on-delivery" required>
+                            <span>Cash on Delivery</span>
+                        </label>
+                    </div>
+                </fieldset>
+
+                <!-- Form Actions -->
+                <div class="form-actions">
+                    <button type="button" id="cancel-checkout" class="btn btn-secondary">Cancel</button>
+                    <button type="submit" class="btn btn-primary">Complete Order</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
     <footer class="footer">
         <p>&copy; 2025 Online Store Click. All rights reserved.</p>
     </footer>
@@ -37,5 +140,6 @@
     <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
     <script src="products.js"></script>
     <script src="react-cart-app.js"></script>
+    <script src="checkout.js"></script>
 </body>
 </html>
