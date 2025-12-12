@@ -269,6 +269,26 @@ body {
     flex-direction: column;
 }
 
+.products-section {
+    max-height: calc(100vh - 220px);
+    overflow-y: auto;
+    padding-right: 0.5rem;
+}
+
+.products-section::-webkit-scrollbar {
+    width: 8px;
+}
+
+.products-section::-webkit-scrollbar-track {
+    background: rgba(255, 255, 255, 0.6);
+    border-radius: 10px;
+}
+
+.products-section::-webkit-scrollbar-thumb {
+    background: linear-gradient(180deg, #ff6b35 0%, #ffa500 100%);
+    border-radius: 10px;
+}
+
 .section:hover {
     box-shadow: 0 12px 48px rgba(0, 0, 0, 0.15);
     transform: translateY(-2px);
