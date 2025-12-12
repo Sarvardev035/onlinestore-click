@@ -40,6 +40,11 @@ async function fetchProducts() {
 function displayProducts(products) {
     PRODUCTS_CONTAINER.innerHTML = '';
     
+    // Store products for filtering in navigation.js
+    if (typeof storeAllProducts !== 'undefined') {
+        storeAllProducts(products);
+    }
+    
     products.forEach(product => {
         const productCard = createProductCard(product);
         PRODUCTS_CONTAINER.appendChild(productCard);
