@@ -1,7 +1,80 @@
 // ============================================
 // CHECKOUT.JS - Pure Vanilla JavaScript
 // Handles delivery form, address, contact, and payment details
+// with real-time validation and autocomplete
 // ============================================
+
+// List of common countries and cities for autocomplete
+const COUNTRIES_LIST = [
+    'United States', 'Canada', 'United Kingdom', 'Australia', 'Germany',
+    'France', 'Spain', 'Italy', 'India', 'Japan', 'China', 'Brazil',
+    'Mexico', 'Russia', 'South Korea', 'Netherlands', 'Switzerland',
+    'Sweden', 'Norway', 'Denmark', 'Belgium', 'Austria', 'Poland',
+    'Singapore', 'Malaysia', 'Indonesia', 'Thailand', 'Philippines',
+    'Vietnam', 'Pakistan', 'Bangladesh', 'Nigeria', 'Egypt', 'UAE',
+    'Saudi Arabia', 'Israel', 'Turkey', 'Greece', 'Portugal', 'Ireland'
+];
+
+const CITIES_LIST = [
+    'New York', 'Los Angeles', 'Chicago', 'Houston', 'Phoenix',
+    'Toronto', 'Vancouver', 'Montreal', 'London', 'Manchester',
+    'Sydney', 'Melbourne', 'Berlin', 'Munich', 'Paris', 'Lyon',
+    'Madrid', 'Barcelona', 'Rome', 'Milan', 'Delhi', 'Mumbai',
+    'Tokyo', 'Osaka', 'Shanghai', 'Beijing', 'Rio de Janeiro',
+    'Sao Paulo', 'Mexico City', 'Moscow', 'Seoul', 'Amsterdam',
+    'Zurich', 'Stockholm', 'Oslo', 'Copenhagen', 'Brussels', 'Vienna',
+    'Warsaw', 'Singapore', 'Bangkok', 'Jakarta', 'Manila', 'Ho Chi Minh City'
+];
+
+// Validation Rules
+const VALIDATION_RULES = {
+    fullName: {
+        validate: (value) => value.trim().length >= 2,
+        message: 'Name must be at least 2 characters',
+        pattern: /^[a-zA-Z\s]{2,}$/
+    },
+    phone: {
+        validate: (value) => {
+            const digits = value.replace(/\D/g, '');
+            return digits.length >= 7 && digits.length <= 15;
+        },
+        message: 'Phone must have 7-15 digits (e.g., +1 (555) 123-4567)',
+        pattern: /^[\d\s\-\+\(\)\.]{7,}$/
+    },
+    email: {
+        validate: (value) => {
+            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            return emailRegex.test(value);
+        },
+        message: 'Enter valid email (example@domain.com)',
+        pattern: /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+    },
+    street: {
+        validate: (value) => value.trim().length >= 3,
+        message: 'Street address must be at least 3 characters',
+        pattern: /^[a-zA-Z0-9\s,\.#-]{3,}$/
+    },
+    city: {
+        validate: (value) => value.trim().length >= 2,
+        message: 'City must be at least 2 characters',
+        pattern: /^[a-zA-Z\s\-]{2,}$/
+    },
+    state: {
+        validate: (value) => value.trim().length >= 2,
+        message: 'State/Province must be at least 2 characters',
+        pattern: /^[a-zA-Z\s]{2,}$/
+    },
+    zip: {
+        validate: (value) => value.trim().length >= 3,
+        message: 'ZIP code must be at least 3 characters',
+        pattern: /^[a-zA-Z0-9\s\-]{3,}$/
+    },
+    country: {
+        validate: (value) => value.trim().length >= 2,
+        message: 'Country must be at least 2 characters',
+        pattern: /^[a-zA-Z\s\-]{2,}$/
+    }
+};
 
 // DOM Elements
 const checkoutModal = document.getElementById('checkout-modal');
@@ -20,6 +93,7 @@ function openCheckoutModal() {
     if (!checkoutModal) return;
     checkoutModal.classList.remove('hidden');
     loadCheckoutData();
+    initializeFieldValidation();
 }
 
 function closeCheckoutModal() {
@@ -49,6 +123,34 @@ if (checkoutModal) {
 }
 
 // ============================================
+// Real-time Field Validation & Autocomplete
+// ============================================
+
+function initializeFieldValidation() {
+    const validatedFields = document.querySelectorAll('[data-validation]');
+    
+    validatedFields.forEach(field => {
+        // Real-time validation on input
+        field.addEventListener('input', function() {
+            validateField(this);
+        });
+
+        // Blur for final validation
+        field.addEventListener('blur', function() {
+            validateField(this);
+        });
+
+        // Autocomplete for city and country
+        if (field.id === 'city') {
+            field.addEventListener('input', showCitySuggestions);
+        }
+        if (field.id === 'country') {
+            field.addEventListener('input', showCountrySuggestions);
+        }
+    });
+}
+
+// ============================================
 // Form Submission
 // ============================================
 
@@ -60,6 +162,12 @@ if (checkoutForm) {
 }
 
 function handleCheckoutSubmit() {
+    // Validate all fields first
+    if (!validateAllFields()) {
+        showError('Please fix errors in the form before submitting');
+        return;
+    }
+
     // Collect form data
     const formData = {
         fullName: document.getElementById('full-name').value.trim(),
@@ -95,51 +203,6 @@ function handleCheckoutSubmit() {
 // ============================================
 
 function validateCheckoutData(data) {
-    // Validate full name
-    if (!data.fullName || data.fullName.length < 2) {
-        showError('Full name is required (at least 2 characters)');
-        return false;
-    }
-
-    // Validate phone
-    if (!data.phone || data.phone.length < 7) {
-        showError('Valid phone number is required');
-        return false;
-    }
-
-    // Validate email
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!data.email || !emailRegex.test(data.email)) {
-        showError('Valid email address is required');
-        return false;
-    }
-
-    // Validate address fields
-    if (!data.street || data.street.length < 3) {
-        showError('Street address is required');
-        return false;
-    }
-
-    if (!data.city || data.city.length < 2) {
-        showError('City is required');
-        return false;
-    }
-
-    if (!data.state || data.state.length < 2) {
-        showError('State/Province is required');
-        return false;
-    }
-
-    if (!data.zip || data.zip.length < 3) {
-        showError('ZIP/Postal code is required');
-        return false;
-    }
-
-    if (!data.country || data.country.length < 2) {
-        showError('Country is required');
-        return false;
-    }
-
     // Validate payment type
     if (!data.paymentType) {
         showError('Payment method must be selected');
@@ -147,6 +210,84 @@ function validateCheckoutData(data) {
     }
 
     return true;
+}
+
+function showCitySuggestions(event) {
+    const input = event.target;
+    const value = input.value.toLowerCase().trim();
+    const suggestionsDiv = document.getElementById('city-suggestions');
+
+    if (!suggestionsDiv) return;
+
+    if (value.length < 1) {
+        suggestionsDiv.innerHTML = '';
+        suggestionsDiv.classList.remove('show');
+        return;
+    }
+
+    const filtered = CITIES_LIST.filter(city =>
+        city.toLowerCase().startsWith(value)
+    ).slice(0, 5);
+
+    if (filtered.length === 0) {
+        suggestionsDiv.innerHTML = '';
+        suggestionsDiv.classList.remove('show');
+        return;
+    }
+
+    suggestionsDiv.innerHTML = filtered.map(city => 
+        `<div class="suggestion-item" data-value="${city}">${city}</div>`
+    ).join('');
+    suggestionsDiv.classList.add('show');
+
+    // Add click listeners
+    suggestionsDiv.querySelectorAll('.suggestion-item').forEach(item => {
+        item.addEventListener('click', function() {
+            input.value = this.getAttribute('data-value');
+            suggestionsDiv.innerHTML = '';
+            suggestionsDiv.classList.remove('show');
+            validateField(input);
+        });
+    });
+}
+
+function showCountrySuggestions(event) {
+    const input = event.target;
+    const value = input.value.toLowerCase().trim();
+    const suggestionsDiv = document.getElementById('country-suggestions');
+
+    if (!suggestionsDiv) return;
+
+    if (value.length < 1) {
+        suggestionsDiv.innerHTML = '';
+        suggestionsDiv.classList.remove('show');
+        return;
+    }
+
+    const filtered = COUNTRIES_LIST.filter(country =>
+        country.toLowerCase().startsWith(value)
+    ).slice(0, 5);
+
+    if (filtered.length === 0) {
+        suggestionsDiv.innerHTML = '';
+        suggestionsDiv.classList.remove('show');
+        return;
+    }
+
+    suggestionsDiv.innerHTML = filtered.map(country => 
+        `<div class="suggestion-item" data-value="${country}">${country}</div>`
+    ).join('');
+    suggestionsDiv.classList.add('show');
+
+    // Add click listeners
+    suggestionsDiv.querySelectorAll('.suggestion-item').forEach(item => {
+        item.addEventListener('click', function() {
+            input.value = this.getAttribute('data-value');
+            suggestionsDiv.innerHTML = '';
+            suggestionsDiv.classList.remove('show');
+            validateField(input);
+        });
+    });
 }
 
 // ============================================
