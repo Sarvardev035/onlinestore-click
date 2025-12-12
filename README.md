@@ -11,7 +11,7 @@ A full-stack e-commerce demo application combining **Vanilla JavaScript** for pr
 
 !!!! 
 But the key point is i fetched the data with http and then github pages blocked it it has to be https that's why it is not loading it 
-!!! #https://sarvardev035.github.io/onlinestore-click-intern/  
+!!! #https://sarvardev035.github.io/onlinestore-click-intern/   no worries it works in local host if you clone it 
 ### everything is full of fun no problem at all task was understandabla and some intelligence is enought 
 ## Overview <img width="1366" height="768" alt="image" src="https://github.com/user-attachments/assets/92d4c021-1036-48e7-b21f-07a173afe11f" />
 
