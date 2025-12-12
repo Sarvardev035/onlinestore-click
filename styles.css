@@ -531,6 +531,23 @@ body {
 .cart-section {
     display: flex;
     flex-direction: column;
+    max-height: calc(100vh - 220px);
+    overflow-y: auto;
+    padding-right: 0.5rem;
+}
+
+.cart-section::-webkit-scrollbar {
+    width: 8px;
+}
+
+.cart-section::-webkit-scrollbar-track {
+    background: rgba(255, 255, 255, 0.6);
+    border-radius: 10px;
+}
+
+.cart-section::-webkit-scrollbar-thumb {
+    background: linear-gradient(180deg, #667eea 0%, #764ba2 100%);
+    border-radius: 10px;
 }
 
 #react-cart-root {
@@ -1143,6 +1160,13 @@ body {
         gap: 1.5rem;
         padding: 0 1rem;
         margin: 1rem auto;
+    }
+
+    .products-section,
+    .cart-section {
+        max-height: none;
+        overflow: visible;
+        padding-right: 0;
     }
 
     .products-grid {
