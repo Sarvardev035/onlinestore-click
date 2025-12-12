@@ -92,7 +92,8 @@ function addToCart(product) {
             title: product.title,
             price: product.price,
             image: product.image,
-            quantity: 1
+            quantity: 1,
+            addedAt: new Date().toISOString() // Add timestamp for discount timer
         });
     }
     

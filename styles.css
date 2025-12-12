@@ -434,10 +434,74 @@ body {
     overflow: hidden;
 }
 
-.cart-item-price {
-    margin: 0.5rem 0 0 0;
+.cart-item-pricing {
+    display: flex;
+    flex-direction: column;
+    gap: 0.3rem;
+    margin: 0.5rem 0;
     font-size: 0.8rem;
-    color: #7f8c8d;
+}
+
+.original-price {
+    color: #999;
+    text-decoration: line-through;
+    font-weight: 600;
+}
+
+.discounted-price {
+    color: #00d4ff;
+    font-weight: 900;
+    font-family: 'Courier New', monospace;
+    font-size: 0.95rem;
+}
+
+.savings {
+    color: #27ae60;
+    font-weight: 700;
+    font-size: 0.75rem;
+}
+
+.discount-timer {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-top: 0.5rem;
+    font-size: 0.75rem;
+    padding: 0.5rem;
+    background: linear-gradient(135deg, #ff6b6b15 0%, #ee5a6f15 100%);
+    border-radius: 6px;
+    border-left: 3px solid #ff6b6b;
+}
+
+.discount-timer.expiring {
+    animation: pulse-warning 1s infinite;
+    border-left-color: #ffc107;
+}
+
+@keyframes pulse-warning {
+    0%, 100% {
+        background: linear-gradient(135deg, #ff6b6b15 0%, #ee5a6f15 100%);
+    }
+    50% {
+        background: linear-gradient(135deg, #ffc10730 0%, #ffc10730 100%);
+    }
+}
+
+.discount-badge {
+    background: linear-gradient(135deg, #ff6b6b 0%, #ee5a6f 100%);
+    color: white;
+    padding: 0.3rem 0.6rem;
+    border-radius: 4px;
+    font-weight: bold;
+    font-size: 0.7rem;
+    white-space: nowrap;
+}
+
+.timer-text {
+    color: #ff6b6b;
+    font-weight: bold;
+    font-family: 'Courier New', monospace;
+    font-size: 0.8rem;
 }
 
 .cart-item-controls {
@@ -503,18 +567,25 @@ body {
 
 .cart-item-total {
     text-align: right;
+    min-width: 70px;
+    font-family: 'Courier New', monospace;
+}
+
+.discounted-total {
+    margin: 0;
     font-weight: 900;
     background: linear-gradient(135deg, #00d4ff 0%, #0099ff 100%);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
-    min-width: 70px;
-    font-family: 'Courier New', monospace;
     font-size: 1.1rem;
 }
 
-.cart-item-total p {
-    margin: 0;
+.original-total {
+    margin: 0.2rem 0 0 0;
+    font-size: 0.75rem;
+    color: #999;
+    text-decoration: line-through;
 }
 
 .btn-remove {
@@ -562,6 +633,22 @@ body {
     border-bottom: 1px solid rgba(255, 255, 255, 0.1);
 }
 
+.summary-row.discount-row {
+    color: #27ae60;
+    font-weight: bold;
+}
+
+.discount-amount {
+    color: #27ae60;
+    font-weight: bold;
+    font-family: 'Courier New', monospace;
+}
+
+.original-amount {
+    color: #999;
+    text-decoration: line-through;
+}
+
 .summary-row.total {
     border-top: 2px solid #667eea;
     border-bottom: none;
@@ -575,6 +662,26 @@ body {
     color: #00d4ff;
     font-family: 'Courier New', monospace;
     letter-spacing: 1px;
+}
+
+.discount-message {
+    margin-top: 1rem;
+    padding-top: 1rem;
+    border-top: 1px solid rgba(255, 255, 255, 0.2);
+    text-align: center;
+    color: #ff6b6b;
+    font-weight: bold;
+    font-size: 0.95rem;
+    animation: blink-discount 1.5s infinite;
+}
+
+@keyframes blink-discount {
+    0%, 100% {
+        opacity: 1;
+    }
+    50% {
+        opacity: 0.7;
+    }
 }
 
 .cart-actions {
