@@ -9,7 +9,8 @@ A full-stack e-commerce demo application combining **Vanilla JavaScript** for pr
 
 # it took me to make this website about 5 hours it was amazing experience for me i ve learned some techniques also and thanks for giving me this opportunity for Click company 
 
-#https://sarvardev035.github.io/onlinestore-click-intern/     here is the github pages link to see this  website 
+#https://sarvardev035.github.io/onlinestore-click-intern/  here is the github pages link to see this  website 
+Bur the key point is i was fetched data with http and then github pages blocked it it has to be https that's why it is not loading it 
 ### everything is full of fun no problem at all task was understandabla and some intelligence is enought 
 ## Overview <img width="1366" height="768" alt="image" src="https://github.com/user-attachments/assets/92d4c021-1036-48e7-b21f-07a173afe11f" />
 
